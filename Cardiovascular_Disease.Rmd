@@ -33,6 +33,8 @@ library(cocor) # fisher's z transformation to compare correlation coefficients
 library(broom) # tidy output
 ```
 
+The Rmd file, which reproduces this PDF file is stored at GitHub under following link: <https://github.com/Ursula-Nicolas/MDC_Homework>
+
 \newpage
 
 # 1 Introduction
@@ -195,7 +197,8 @@ cardio_data %>% ggplot(aes(cardio)) +
 Furthermore, we want to see if all data is complete. 
 
 ```{r missingVal}
-sum(is.na(cardio_data))
+MV <- sum(is.na(cardio_data))
+MV
 ```
 
 There are `r MV` missing cases. Therefore, the data is hereby ready to be used for analysis.
@@ -442,7 +445,7 @@ cocor.indep.groups(r1.jk=cor_BMI_aplo_0_95D$estimate,
                    alpha=0.05, conf.level=0.95, null.value=0)
 ```
 
-## 2.5 Summary relationship bwetween blood pressure and BMI (\textcolor{red}{Tasks 2-4})
+## 2.5 Summary relationship between blood pressure and BMI (\textcolor{red}{Tasks 2-4})
 
 There seems to be only a moderate relationship between blood pressure and BMI. Although correlation coefficients do significantly differ between cardio groups (without disease > with disease) according to the Pearson-moment correlation, all correlation coefficients stay within the range of 0.1-0.3, therefore, in the same category according to Cohen [-@Cohen1988]. It has to be noted, that diastolic blood pressure versus BMI of the affected group while applying a 95% threshold, resulted even in a correlation coefficient lower than 0.1 (`r round(cor_BMI_aplo_1_95D$estimate,2)`).
 
@@ -472,6 +475,7 @@ names(SumTab1) <- c("Overall",
                     "With disease", 
                     "Without disease", "p-Value")
 kable(SumTab1,
+      caption = "First ten rows of the cardiovascular disease data set",      
       booktabs = T) %>% 
   kable_styling(latex_options = "striped")
 
@@ -489,7 +493,7 @@ cardio_data %>% group_by(cardio) %>%
             min_age = min(age)) %>% 
   kable(col.names = c("Cardio Group", "mean", "SD", "max", "min"), 
         digits = 1, 
-        caption = "Overview of age distribution for each cardio group", 
+        caption = "Overview of age distribution in years for each cardio group", 
         booktabs = T) %>% 
   kable_styling(latex_options = c("striped","hold_position"))%>%  
   column_spec(2:4, width = "0.5in")%>% 
@@ -518,27 +522,25 @@ While age seems to be slightly different distributed between both cardio groups,
 
 ```{r ageDistributionCardioGender, fig.height= 2, fig.cap= "Age distribution for gender and cardio\\label{ageDis2}", echo= FALSE}
 cardio_data$gender <- as.factor(cardio_data$gender)
-dens_gender1 <- cardio_data %>% ggplot(.) + geom_density(aes(age, fill = gender), alpha = 0.5) + theme_bw() + theme(axis.text.y = element_blank(), 
-                                                                                                                    axis.title.y = element_blank())
+dens_gender1 <- cardio_data %>% ggplot(.) + geom_density(aes(age, fill = gender), alpha = 0.5) + theme_bw()
 
 grid.arrange(dens_age1,dens_gender1, nrow = 1)
 ```
 
 ## 2.8 Additionally include variable glucose into plot of 2.6 (\textcolor{red}{Task 7})
 
-Taking, furthermore, the different types of glucose into account a slight different age distribution between glucose category 1-2 and category 3 can be visually detected (Figure \ref{ageDis3}), while especially older people seem to have a glucose level well above the normal level (glucose 3).
+Taking, furthermore, the different types of glucose into account a slight different age distribution between glucose category 1-2 and category 3 can be visually detected (Figure \ref{ageDis3}), while especially older people seem to have a glucose level well above the normal level (gluc 3).
 
 ```{r ageDistributionCardioGenderGluc, fig.height= 2, fig.cap= "Age distribution for cardio (left), gender (middle) and glucose (right)\\label{ageDis3}", echo= FALSE}
 cardio_data$gluc <- as.factor(cardio_data$gluc)
-dens_glucose1 <- cardio_data %>% ggplot(.) + geom_density(aes(age, fill = gluc), alpha = 0.5) + theme_bw()+ theme(axis.text.y = element_blank(), 
-                                                                                                                    axis.title.y = element_blank())
+dens_glucose1 <- cardio_data %>% ggplot(.) + geom_density(aes(age, fill = gluc), alpha = 0.5) + theme_bw()
 
 gridExtra::grid.arrange(dens_age1,dens_gender1,dens_glucose1, nrow = 1)
 ```
 
 ## 2.9 Risk factors smoking, alcohol and physical activity (\textcolor{red}{Task 8})
 
-Further risk factors, which might trigger cardiovascular diseases may be smoking, alcohol abuse or insufficient physical activity. Table \ref{tab:RiskFactors} summarizes the distribution of these variables between the two types of *cardio*. To quantify the differences between both groups of cardio, a $\chi$^2^ test will be undertaken for each risk factor.
+Further risk factors, which might trigger cardiovascular diseases may be smoking, alcohol abuse or insufficient physical activity. Table \ref{tab:RiskFactors} summarizes the relative distribution in percentage of these variables between the two types of *cardio*. To quantify the differences between both groups of cardio, a $\chi$^2^ test will be undertaken for each risk factor.
 
 
 ```{r RiskFactors, message = FALSE, echo= FALSE}
@@ -557,7 +559,7 @@ RF2_per <- c(round(RF2[3,3]/(sum(RF2[1,3],RF2[3,3]))*100,2),round(RF2[4,3]/(sum(
 RF3_per <- c(round(RF3[1,3]/(sum(RF3[1,3],RF3[3,3]))*100,2),round(RF3[2,3]/(sum(RF3[2,3],RF3[4,3]))*100,2),format.pval(CQ3$p.value))
 
 kable(cbind(CardioGroup,RF1_per,RF2_per,RF3_per),
-      col.names = c("Data","Smoking","Alcohol", "No physical activity"),
+      col.names = c("Data","Smoking (%)","Alcohol (%)", "No physical activity (%)"),
       caption = "Relative frequency of risk factors in percent and Chi-squared test results",
       booktabs = T) %>% 
   kable_styling(latex_options = c("striped","hold_position"))

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.6)  6 JAN 2021 18:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.6)  6 JAN 2021 20:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -742,44 +742,44 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 {c:/Users/Kathinka/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pd
 ftex.map}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 171.
+(Font)              <5> on input line 174.
 [2pdfTeX warning (ext4): destination with the same identifier (name{table.1}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.227 \begin{Shaded}
+l.230 \begin{Shaded}
                     pdfTeX warning (ext4): destination with the same identifier
  (name{table.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.227 \begin{Shaded}
+l.230 \begin{Shaded}
                     ]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 2
-28.
+31.
 (c:/Users/Kathinka/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 229.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 232.
 
-Overfull \hbox (41.74673pt too wide) in paragraph at lines 241--248
+Overfull \hbox (41.74673pt too wide) in paragraph at lines 244--251
  [][] 
  []
 
-<Cardiovascular_Disease_files/figure-latex/outliers-1.pdf, id=109, 469.755pt x 
+<Cardiovascular_Disease_files/figure-latex/outliers-1.pdf, id=111, 469.755pt x 
 216.81pt>
 File: Cardiovascular_Disease_files/figure-latex/outliers-1.pdf Graphic file (ty
 pe pdf)
 <use Cardiovascular_Disease_files/figure-latex/outliers-1.pdf>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/outliers-1.p
-df  used on input line 259.
+df  used on input line 262.
 (pdftex.def)             Requested size: 469.75386pt x 216.80946pt.
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
-71.
+74.
 (c:/Users/Kathinka/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-Underfull \hbox (badness 10000) in paragraph at lines 280--286
+Underfull \hbox (badness 10000) in paragraph at lines 283--289
 \T1/lmr/m/n/10.95 / / www . bloodpressureuk . org / your -[] blood -[] pressure
  / understanding -[] your -[] blood -[] pressure / what -[] do -[]
  []
@@ -788,201 +788,199 @@ Underfull \hbox (badness 10000) in paragraph at lines 280--286
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.287 A
+l.290 A
        fter filtering the data, the data set is reduced to 63584 participants,p
 dfTeX warning (ext4): destination with the same identifier (name{figure.1}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.287 A
+l.290 A
        fter filtering the data, the data set is reduced to 63584 participants, 
 <./Cardiovascular_Disease_files/figure-latex/outliers-1.pdf>]
-<Cardiovascular_Disease_files/figure-latex/NoOutliers-1.pdf, id=130, 469.755pt 
+<Cardiovascular_Disease_files/figure-latex/NoOutliers-1.pdf, id=132, 469.755pt 
 x 216.81pt>
 File: Cardiovascular_Disease_files/figure-latex/NoOutliers-1.pdf Graphic file (
 type pdf)
 <use Cardiovascular_Disease_files/figure-latex/NoOutliers-1.pdf>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/NoOutliers-1
-.pdf  used on input line 293.
+.pdf  used on input line 296.
 (pdftex.def)             Requested size: 469.75386pt x 216.80946pt.
-<Cardiovascular_Disease_files/figure-latex/distribution-1.pdf, id=131, 144.54pt
- x 144.54pt>
+<Cardiovascular_Disease_files/figure-latex/distribution-1.pdf, id=133, 144.54pt
+ x 129.48375pt>
 File: Cardiovascular_Disease_files/figure-latex/distribution-1.pdf Graphic file
  (type pdf)
 <use Cardiovascular_Disease_files/figure-latex/distribution-1.pdf>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/distribution
--1.pdf  used on input line 303.
-(pdftex.def)             Requested size: 144.54623pt x 144.54623pt.
+-1.pdf  used on input line 306.
+(pdftex.def)             Requested size: 144.54623pt x 129.48933pt.
 [4pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.318 \newpage
+l.326 \newpage
               pdfTeX warning (ext4): destination with the same identifier (name
 {figure.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.318 \newpage
+l.326 \newpage
                <./Cardiovascular_Disease_files/figure-latex/NoOutliers-1.pdf> <
-./Cardiovascular_Disease_files/figure-latex/distribution-1.pdf>]
-<Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi-1.pdf, id=152, 469.75
+./Cardiovascular_Disease_files/figure-latex/distribution-1.pdf>] [5]
+<Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi-1.pdf, id=158, 469.75
 5pt x 325.215pt>
 File: Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi-1.pdf Graphic fi
 le (type pdf)
 <use Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi-1.pdf>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_
-hi-1.pdf  used on input line 362.
+hi-1.pdf  used on input line 370.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[5pdfTeX warning (ext4): destination with the same identifier (name{table.4}) h
+[6pdfTeX warning (ext4): destination with the same identifier (name{table.4}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.366 
-      ] [6pdfTeX warning (ext4): destination with the same identifier (name{fig
+l.374 
+      ] [7pdfTeX warning (ext4): destination with the same identifier (name{fig
 ure.4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
 l.414 
-      pdfTeX warning (ext4): destination with the same identifier (name{table.5
-}) has been already used, duplicate ignored
+       <./Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi-1.pdf>] [8pd
+fTeX warning (ext4): destination with the same identifier (name{table.5}) has b
+een already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.414 
-       <./Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi-1.pdf>]
-<Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo-1.pdf, id=179, 469.75
+l.466 ...etween-diastolic-blood-pressure-and-bmi}}
+                                                  ]
+<Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo-1.pdf, id=192, 469.75
 5pt x 325.215pt>
 File: Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo-1.pdf Graphic fi
 le (type pdf)
 <use Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo-1.pdf>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_
-lo-1.pdf  used on input line 464.
+lo-1.pdf  used on input line 473.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[7] [8pdfTeX warning (ext4): destination with the same identifier (name{figure.
-5}) has been already used, duplicate ignored
+[9pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) 
+has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.524 \end{verbatim}
-                    pdfTeX warning (ext4): destination with the same identifier
- (name{table.6}) has been already used, duplicate ignored
+l.511 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.6
+}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.524 \end{verbatim}
-                     <./Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_l
-o-1.pdf>]
-<Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi_95-1.pdf, id=204, 469
+l.511 
+       <./Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo-1.pdf>]
+<Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi_95-1.pdf, id=210, 469
 .755pt x 325.215pt>
 File: Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi_95-1.pdf Graphic
  file (type pdf)
 <use Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_hi_95-1.pdf>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_
-hi_95-1.pdf  used on input line 551.
+hi_95-1.pdf  used on input line 561.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[9] [10pdfTeX warning (ext4): destination with the same identifier (name{figure
-.6}) has been already used, duplicate ignored
+[10] [11pdfTeX warning (ext4): destination with the same identifier (name{figur
+e.6}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.599 \end{verbatim}
+l.609 \end{verbatim}
                     pdfTeX warning (ext4): destination with the same identifier
  (name{table.7}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.599 \end{verbatim}
+l.609 \end{verbatim}
                      <./Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_h
 i_95-1.pdf>]
-<Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo_95-1.pdf, id=228, 469
+<Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo_95-1.pdf, id=234, 469
 .755pt x 325.215pt>
 File: Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo_95-1.pdf Graphic
  file (type pdf)
 <use Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo_95-1.pdf>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_
-lo_95-1.pdf  used on input line 608.
+lo_95-1.pdf  used on input line 618.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[11pdfTeX warning (ext4): destination with the same identifier (name{figure.7})
+[12pdfTeX warning (ext4): destination with the same identifier (name{figure.7})
  has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.637 
-       <./Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo_95-1.pdf>]
-
-LaTeX Warning: Reference `tab:SummaryTableBloodBMI' on page 12 undefined on inp
-ut line 671.
-
-[12pdfTeX warning (ext4): destination with the same identifier (name{table.8}) 
-has been already used, duplicate ignored
+l.647 
+       <./Cardiovascular_Disease_files/figure-latex/plot_BMI_ap_lo_95-1.pdf>] [
+13pdfTeX warning (ext4): destination with the same identifier (name{table.8}) h
+as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.690 
+l.705 
       ]
-<Cardiovascular_Disease_files/figure-latex/ageDistributionCardio-1.pdf, id=254,
+<Cardiovascular_Disease_files/figure-latex/ageDistributionCardio-1.pdf, id=263,
  469.755pt x 144.54pt>
 File: Cardiovascular_Disease_files/figure-latex/ageDistributionCardio-1.pdf Gra
 phic file (type pdf)
 <use Cardiovascular_Disease_files/figure-latex/ageDistributionCardio-1.pdf>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/ageDistribut
-ionCardio-1.pdf  used on input line 723.
+ionCardio-1.pdf  used on input line 738.
 (pdftex.def)             Requested size: 469.75386pt x 144.53963pt.
 <Cardiovascular_Disease_files/figure-latex/ageDistributionCardioGender-1.pdf, i
-d=256, 469.755pt x 144.54pt>
+d=265, 469.755pt x 144.54pt>
 File: Cardiovascular_Disease_files/figure-latex/ageDistributionCardioGender-1.p
 df Graphic file (type pdf)
 <use Cardiovascular_Disease_files/figure-latex/ageDistributionCardioGender-1.pd
 f>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/ageDistribut
-ionCardioGender-1.pdf  used on input line 738.
+ionCardioGender-1.pdf  used on input line 753.
 (pdftex.def)             Requested size: 469.75386pt x 144.53963pt.
-[13pdfTeX warning (ext4): destination with the same identifier (name{table.9}) 
+[14pdfTeX warning (ext4): destination with the same identifier (name{table.9}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.741 
+l.756 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.1
+0}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  
+l.756 
       pdfTeX warning (ext4): destination with the same identifier (name{figure.
 8}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.741 
+l.756 
        <./Cardiovascular_Disease_files/figure-latex/ageDistributionCardio-1.pdf
 >]
 <Cardiovascular_Disease_files/figure-latex/ageDistributionCardioGenderGluc-1.pd
-f, id=277, 469.755pt x 144.54pt>
+f, id=285, 469.755pt x 144.54pt>
 File: Cardiovascular_Disease_files/figure-latex/ageDistributionCardioGenderGluc
 -1.pdf Graphic file (type pdf)
 <use Cardiovascular_Disease_files/figure-latex/ageDistributionCardioGenderGluc-
 1.pdf>
 Package pdftex.def Info: Cardiovascular_Disease_files/figure-latex/ageDistribut
-ionCardioGenderGluc-1.pdf  used on input line 754.
+ionCardioGenderGluc-1.pdf  used on input line 770.
 (pdftex.def)             Requested size: 469.75386pt x 144.53963pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[14pdfTeX warning (ext4): destination with the same identifier (name{figure.9})
+[15pdfTeX warning (ext4): destination with the same identifier (name{figure.9})
  has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.790 \newpage
-              pdfTeX warning (ext4): destination with the same identifier (name
-{figure.10}) has been already used, duplicate ignored
+l.812 
+      pdfTeX warning (ext4): destination with the same identifier (name{figure.
+10}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.790 \newpage
-               <./Cardiovascular_Disease_files/figure-latex/ageDistributionCard
-ioGender-1.pdf> <./Cardiovascular_Disease_files/figure-latex/ageDistributionCar
-dioGenderGluc-1.pdf>] [15pdfTeX warning (ext4): destination with the same ident
-ifier (name{table.10}) has been already used, duplicate ignored
+l.812 
+       <./Cardiovascular_Disease_files/figure-latex/ageDistributionCardioGender
+-1.pdf> <./Cardiovascular_Disease_files/figure-latex/ageDistributionCardioGende
+rGluc-1.pdf>] [16pdfTeX warning (ext4): destination with the same identifier (n
+ame{table.11}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.806 \end{document}
-                    ] (./Cardiovascular_Disease.aux)
-
-LaTeX Warning: There were undefined references.
-
+l.813 \newpage
+              ] [17] (./Cardiovascular_Disease.aux)
 Package rerunfilecheck Info: File `Cardiovascular_Disease.out' has not changed.
 
-(rerunfilecheck)             Checksum: 259B7572507F913F829AE0DE1DC0BE37;4386.
+(rerunfilecheck)             Checksum: 37CDC9EE2914D9E2928AA2B359BA6BBA;4405.
  ) 
 Here is how much of TeX's memory you used:
- 13038 strings out of 481258
- 193486 string characters out of 5913987
- 519224 words of memory out of 5000000
+ 13041 strings out of 481258
+ 193506 string characters out of 5913987
+ 519458 words of memory out of 5000000
  29624 multiletter control sequences out of 15000+600000
  453359 words of font info for 67 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1003,10 +1001,10 @@ sers/Kathinka/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.p
 fb><c:/Users/Kathinka/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/
 lmtk10.pfb><c:/Users/Kathinka/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pu
 blic/lm/lmtt10.pfb>
-Output written on Cardiovascular_Disease.pdf (15 pages, 11308036 bytes).
+Output written on Cardiovascular_Disease.pdf (17 pages, 11319534 bytes).
 PDF statistics:
- 372 PDF objects out of 1000 (max. 8388607)
- 321 compressed objects within 4 object streams
- 74 named destinations out of 1000 (max. 500000)
+ 384 PDF objects out of 1000 (max. 8388607)
+ 331 compressed objects within 4 object streams
+ 77 named destinations out of 1000 (max. 500000)
  171 words of extra memory for PDF output out of 10000 (max. 10000000)
 
