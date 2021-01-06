@@ -1,0 +1,557 @@
+---
+title: "Medical Data Science"
+subtitle: "Working with data: homework"
+author: "Ursula Trinler"
+date: "deadline: 06.01.2021"
+output: 
+  pdf_document:
+    fig_caption: yes # Give figues a caption
+    toc: true # Table of contents
+fontsize: 11pt
+urlcolor: blue
+
+# That figues stay in line with text
+header-includes: 
+   \usepackage{float}
+   \floatplacement{figure}{H}
+   \floatplacement{table}{H}  
+# \setlength{\abovecaptionskip}{-5pt} 
+
+ # Include bibliography
+bibliography: Cardio.bib
+---
+
+```{r load, message=FALSE, warning=FALSE, echo = FALSE}
+library(knitr)
+library(mlbench)
+library(tidyverse)
+library(gridExtra) # plotting functions
+library(kableExtra) # table functions
+library(bookdown) 
+library(float) # placing the tables and figures
+library(cocor) # fisher's z transformation to compare correlation coefficients
+library(broom) # tidy output
+```
+
+\newpage
+
+# 1 Introduction
+
+## 1.1 Summary
+
+This document includes the cardiovascular disease dataset which is freely available on kaggle (<https://www.kaggle.com/sulianova/cardiovascular-disease-dataset>). The main research question of the study is whether the variable *cardio* can be explained by variables which have been additionally collected (see Table \ref{tab:table1}).
+
+## 1.2 The cardiovascular dataset
+
+```{r read_data, echo = FALSE}
+data <- read.csv2('cardio_train.csv')
+cardio_data <- as_tibble(data)
+```
+
+The data set consists of `r nrow(cardio_data)` cases, while `r ncol(cardio_data)` variables have been included. The first ten rows of the data set can be found in Table (\ref{tab:summary}).
+  
+  
+
+```{r summary, echo = FALSE}
+kable(head(cardio_data[,1:ncol(cardio_data)], 10),
+      booktabs = TRUE, 
+      caption = "First ten rows of the cardiovascular disease data set") %>% 
+  kable_styling(font_size = 8)
+```
+
+A detailed description of each included variable can be found in in the next table, Table (\ref{tab:table1}).
+&nbsp;
+&nbsp;
+
+```{r table1, echo = FALSE}
+varNames <- c( "Age" , 
+               "Gender" , 
+               "Body height" , 
+               "Body weight" , 
+               "Systolic blood pressure", 
+               "Diastolic blood pressure" , 
+               "Cholesterol" , "Glucose" , 
+               "Smoking" , 
+               "Alcohol consumation" , 
+               "Physical activity" , 
+               "Cardiovascular disease")
+varExpl <- c("in days" , 
+             "1 = women, 2 = men" , 
+             "in cm" , 
+             "in kg" , 
+             "mmHg", "mmHg" , 
+             "1: normal, 2: above normal, 3: well above normal" , 
+             "1: normal, 2: above normal, 3: well above normal" , 
+             "1 = yes, 0 = no" , 
+             "1 = yes, 0 = no" , 
+             "1 = yes, 0 = no" , 
+             "1 = yes, 0 = no")
+varShort <- colnames(cardio_data[-1])
+
+kable(cbind(varShort,varNames,varExpl), 
+                caption = "Description of variables", 
+                col.names = c("short name","variable", "more information"),
+      booktabs = T) %>% 
+  kable_styling(latex_options = "striped", font_size = 8)
+```
+
+
+
+## 1.3 Cleaning the data set
+
+*Age* is displayed in days, however, having age in years is easier to analyze. Therefore, we transform the variable *age* from days into years as follows:
+
+```{r ageYears}
+cardio_data$age <- round(cardio_data$age/365.25 , 0)
+```
+
+For further analysis it is important to also check which data type each variable has been assigned to.
+
+```{r dataTypes, echo= FALSE}
+kable(t(sapply(cardio_data , class)),
+      caption = "Data type of variables", 
+     # col.names = ("data type"),
+      booktabs = T) %>% 
+  kable_styling(latex_options = "striped", font_size = 8)
+```
+
+```{r heightNumber, echo= FALSE}
+cardio_data$weight <- as.double(cardio_data$weight)
+```
+
+Table \ref{tab:dataTypes} shows that *weight* is defined as a character, therefore, it needs to be changed to a numeric data type. We also need to be sure, that there are no missing values or big outliers which might induce errors in the data analysis. Therefore, we, firstly, analyze the distribution of continuous variables by visualizing the data using boxplots.
+
+```{r outliers, fig.cap= "Distribution of continuous variables\\label{FigOutliers}", fig.height= 3, echo= FALSE}
+bp1 <- cardio_data %>% ggplot(aes(y = age)) + geom_boxplot(fill = "#ff9999") +
+  theme_bw() + theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+bp2 <- cardio_data %>% ggplot(aes(y = height)) + geom_boxplot(fill = "#ff9999") +
+  theme_bw() + theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+bp3 <- cardio_data %>% ggplot(aes(y = weight)) + geom_boxplot(fill = "#ff9999") +
+  theme_bw() + theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+bp4 <- cardio_data %>% ggplot(aes(y = ap_hi)) + geom_boxplot(fill = "#ff9999") +
+  ylab("Systolic blood pressure") + theme_bw() + theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+bp5 <- cardio_data %>% ggplot(aes(y = ap_lo)) + geom_boxplot(fill = "#ff9999") +
+  ylab("Diastolic blood pressure") + theme_bw() + theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+
+gridExtra::grid.arrange(bp1, bp2, bp3, bp4, bp5, 
+                        nrow = 1)
+```
+
+Figure \ref{FigOutliers} shows clearly that there are non-meaningful outliers for the systolic and diastolic blood pressure, as well as for body height and weight as they are outside the healthy and pathologic human range. We define the range of these values as follows:
+
+* Systolic blood pressure: 70 - 190 mmHg
+* Diastolic blood pressure: 40 - 100 mmHg
+* Weight of an adult person: 40 - 200 kg
+* Height of an adult person: 1.40 - 2.20 m
+
+Information about blood pressure range have been taken from *Blood Pressure UK* (<http://www.bloodpressureuk.org/your-blood-pressure/understanding-your-blood-pressure/what-do-the-numbers-mean/>), while information of weight and height have been taken from the *NHS*, see <https://www.nhs.uk/live-well/healthy-weight/height-weight-chart/>.
+
+```{r filter, echo= FALSE}
+cardio_data <- cardio_data %>%
+  filter(height > 140 & height < 220) %>%
+  filter(weight > 40 & weight < 200) %>%  
+  filter(ap_hi > 70 & ap_hi < 190) %>%
+  filter(ap_lo > 40 & ap_lo < 100)
+```
+
+After filtering the data, the data set is reduced to `r nrow(cardio_data)`, therefore, `r nrow(data)-nrow(cardio_data)` cases have been removed. Now, the distribution of these variables looks as follows (Figure \ref{FigNoOutliers}):
+
+```{r NoOutliers, fig.cap= "Distribution after removal of outliers\\label{FigNoOutliers}", fig.height= 3, echo= FALSE}
+bp1 <- cardio_data %>% ggplot(aes(y = age)) + geom_boxplot(fill = "#ff9999") +
+  theme_bw()+ theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+bp2 <- cardio_data %>% ggplot(aes(y = height)) + geom_boxplot(fill = "#ff9999") +
+  theme_bw()+ theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+bp3 <- cardio_data %>% ggplot(aes(y = weight)) + geom_boxplot(fill = "#ff9999") +
+  theme_bw()+ theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+bp4 <- cardio_data %>% ggplot(aes(y = ap_hi)) + geom_boxplot(fill = "#ff9999") +
+  ylab("Systolic blood pressure") + theme_bw()+ theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+bp5 <- cardio_data %>% ggplot(aes(y = ap_lo)) + geom_boxplot(fill = "#ff9999") +
+  ylab("Diastolic blood pressure") + theme_bw()+ theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank())
+
+gridExtra::grid.arrange(bp1, bp2, bp3, bp4, bp5, nrow = 1)
+```
+
+Before we start to analyze the data set in detail we want to visualize the distribution of cases between both cardiovascular groups, to gain an overview if both groups have the same number of participants: 
+
+```{r distribution, fig.cap= "Number of cases per cardiovascular group", fig.height= 2, fig.width= 2, echo= FALSE}
+cardio_data$cardio <- as.factor(cardio_data$cardio)
+cardio_data %>% ggplot(aes(cardio)) +
+  geom_bar(fill = c("#ff9999","#ffcccc")) +
+  xlab("Cardiovascular group") +
+  ylab("Number of cases") +
+  theme_bw()
+```
+
+Furthermore, we want to see if all data is complete. There are `r sum(is.na(cardio_data))` missing cases. Therefore, the data is hereby ready to be used for analysis.
+
+\newpage
+
+# 2 Data set maniputation and analysis
+
+## 2.1 New variable BMI (\textcolor{red}{Task 1})
+
+To understand the influence of the relative weight of a person on cardiovascular diseases, we calculate the BMI and include it in the data set. Table \ref{tab:BMI} gives an overview of the BMI distribution in both cardio groups (cardio 0 = heathly, cardio 1 = affected).
+
+```{r BMI, message = FALSE, echo= FALSE}
+BMI <- cardio_data$weight/((cardio_data$height/100)^2)
+cardio_data <- mutate(cardio_data, BMI = BMI)
+
+cardio_data %>% group_by(cardio) %>%
+  summarize(mean_BMI = mean(BMI), 
+            sd_BMI = sd(BMI), 
+            max_BMI = max(BMI), 
+            min_BMI = min(BMI)) %>% 
+  kable(col.names = c("Cardio Group", "mean", "SD", "max", "min"), 
+        digits = 1, 
+        caption = "Overview of BMI distribution for each cardio group", 
+        booktabs = T) %>% 
+  kable_styling(latex_options = c("striped","hold_position"))%>%  
+  column_spec(2:4, width = "0.5in")%>% 
+  add_footnote(c("Cardio group 0 = healthy, 1 = affected", "SD = standard deviation"), 
+               notation="none")
+```
+
+## 2.2 Correlation between systolic blood pressure and BMI (\textcolor{red}{Task 2})
+
+The BMI might have an influence on the systolic blood pressure. To analyze this we need to correlate both variables (BMI vs. systolic blood pressure) with each other. First we plot the relationship between both variables using a simple scatter plot and include a linear regression line.
+
+```{r plot_BMI_ap_hi, message = FALSE , fig.cap= "Scatter plot showing the relationship between BMI and systolic blood pressure\\label{BMI_ap_hi}", echo= FALSE}
+ggplot(cardio_data, aes(ap_hi, BMI)) +
+  geom_point(aes(color = cardio, alpha = 0.7)) + 
+  geom_smooth(method = lm, colour = 'black') +
+  geom_smooth(aes(colour = cardio, group = cardio) , method = lm,se = FALSE) +
+  xlab("Systolic blood pressure (mmHg)") +
+  ylab("BMI (kg/m²)") +
+  theme_bw()
+```
+
+The scatter plot (Figure \ref{BMI_ap_hi}) shows a rather weak relationship (black regression line for overall data set), meaning that with increasing systolic blood pressure the BMI is only slightly increasing. People with cardiovascular diseases (cardio = 1 in green), however, tend to have higher systolic blood pressure than people with no cardiovascular disease (cardio = 0 in red), which is indicated by the different distribution over the horizontal axis. Linear regression line of both groups are close to each other, while it is slightly less steep for cardio group 1. 
+
+As systolic blood pressure and BMI can be seen as continuous data we can do a Pearson's product-moment correlation to analyze their linear relationship in more detail. 
+
+```{r cor_BMI_ap_hi, echo= FALSE}
+cor_BMI_aphi <- cor.test(cardio_data$ap_hi, cardio_data$BMI, method = "pearson")
+table_cor_BMI_aphi <- cor_BMI_aphi %>% tidy()
+kable(t(table_cor_BMI_aphi),
+      caption = "BMI vs. systolic blood pressure: Pearson-moment correlation") %>% 
+  kable_styling(latex_options = c("striped"))
+```
+The results show, that the empiric correlation coefficient is `r round(cor_BMI_aphi$estimate,2)`, which lies within the 95% confidence interval of `r round(cor_BMI_aphi$conf.int[1],2)` and `r round(cor_BMI_aphi$conf.int[2],2)`, while 0 is not included in the confidence interval. The correlation coefficient of `r round(cor_BMI_aphi$estimate,2)` shows a positive relationship between BMI and systolic blood pressure, however, is under 0.3, indicating, that the systolic blood pressure and the BMI have only a moderate linear relationship (see also @Cohen1988). Based on $\alpha = 0.05$ the relationship between both variables is significant as *p* `r format.pval(cor_BMI_aphi$p.value)`. 
+
+The relationship between systolic blood pressure and BMI could be dependent on having or not having cardiovascular diseases. In the above plot (Figure \ref{BMI_ap_hi}) the regression lines for both cardio groups lie quite close together. To be able to analyze, if the relationship between systolic blood pressure and BMI is different between both cardiovascular disease groups, Fisher's z transformation is needed to compare the correlation coefficients of cardio = 0 and cardio = 1 [@Diedenhofen2015]. Using the cocor package of (@Diedenhofen2015), following output is given:
+
+```{r cor_BMI_ap_hi_group, echo= FALSE}
+# correlation coefficient for both groups
+cardio_1 <- filter(cardio_data, cardio == 1)
+cardio_0 <- filter(cardio_data, cardio == 0)
+
+cor_BMI_aphi_0 <- cor.test(cardio_0$ap_hi, cardio_0$BMI, method = "pearson")
+cor_BMI_aphi_1 <- cor.test(cardio_1$ap_hi, cardio_1$BMI, method = "pearson")
+
+## function to do fisher transformation 
+#fisher.z<- function (r1,r2,n1,n2) (atanh(r1) - atanh(r2)) / ((1/(n1-3))+(1/(n2-3)))^0.5
+
+## two tailed t-test
+#2*(1-pnorm(abs(fisher.z(r1 = cor_BMI_aphi_0$estimate ,
+#                        r2 = cor_BMI_aphi_1$estimate ,
+#                        n1= nrow(cardio_0),
+#                        n2= nrow(cardio_1)))))
+
+# with cocor (https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0121945)
+cocor.indep.groups(r1.jk=cor_BMI_aphi_0$estimate, 
+                   r2.hm=cor_BMI_aphi_1$estimate, 
+                   n1=nrow(cardio_0), 
+                   n2=nrow(cardio_1), 
+                   alternative="two.sided", 
+                   alpha=0.05, conf.level=0.95, null.value=0)
+  
+```
+
+The results indicate a difference between groups (p-value under $\alpha = 0.05$), i.e. between the correlation between systolic blood pressure and BMI differs between people with (`r round(cor_BMI_aphi_1$estimate,2)`) and without (`r round(cor_BMI_aphi_0$estimate,2)`) cardiovascular diseases, while people with cardiovascular diseases have a smaller correlation coefficient. However, both correlation coefficients stay between 0.1 and 0.3, therefore, they are categorized within the same correlation category [@Cohen1988]. This indicates, that the result is not necessarily clinical relevant.
+
+## 2.3 Correlation between diastolic blood pressure and BMI (\textcolor{red}{Task 3})
+
+Same analysis will be done for the relationship between diastolic blood pressure and BMI.
+
+```{r plot_BMI_ap_lo, message = FALSE, fig.cap= "Scatter plot showing the relationship between BMI and diastolic blood pressure\\label{BMI_ap_lo}", echo= FALSE}
+ggplot(cardio_data, aes(ap_lo, BMI)) +
+  geom_point(aes(color = cardio, alpha = 0.7)) + 
+  geom_smooth(method = lm, colour = 'black') +
+  geom_smooth(aes(colour = cardio, group = cardio) , method = lm,se = FALSE) +
+  xlab("Diastolic blood pressure (mmHg)") +
+  ylab("BMI (kg/m²)") +
+  theme_bw()
+```
+
+```{r cor_BMI_ap_lo, echo= FALSE}
+cor_BMI_aplo <- cor.test(cardio_data$ap_lo, cardio_data$BMI, method = "pearson")
+table_cor_BMI_aplo <- cor_BMI_aplo %>% tidy()
+kable(t(table_cor_BMI_aplo),
+      caption = "BMI vs. diastolic blood pressure: Pearson-moment correlation") %>% 
+  kable_styling(latex_options = c("striped"))
+```
+
+Similar results are shown for the diastolic blood pressure, resulting in an empiric correlation coefficient of `r round(cor_BMI_aplo$estimate,2)`, which again lies within the 95% confidence interval of `r round(cor_BMI_aplo$conf.int[1],2)` and `r round(cor_BMI_aplo$conf.int[2],2)`, while 0 is not included in the confidence interval. The confidence interval of `r round(cor_BMI_aplo$estimate,2)` is again positive and under 0.3, indicating a moderate linear relationship between diastolic blood pressure and BMI [@Cohen1988]. The p-value of *p* `r format.pval(cor_BMI_aplo$p.value)` shows a significant results based on $\alpha = 0.05$. 
+
+Comparing the correlation coefficient between healthy and affected participants, following output is shown according to @Diedenhofen2015:
+
+```{r cor_BMI_ap_lo_group, echo= FALSE}
+# correlation coefficient for both groups
+cor_BMI_aplo_0 <- cor.test(cardio_0$ap_lo, cardio_0$BMI, method = "pearson")
+cor_BMI_aplo_1 <- cor.test(cardio_1$ap_lo, cardio_1$BMI, method = "pearson")
+
+## two tailed t-test
+#2*(1-pnorm(abs(fisher.z(r1 = cor_BMI_aplo_0$estimate ,
+#                        r2 = cor_BMI_aplo_1$estimate ,
+#                        n1= nrow(cardio_0),
+#                        n2= nrow(cardio_1)))))
+
+# with cocor (https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0121945)
+cocor.indep.groups(r1.jk=cor_BMI_aplo_0$estimate, 
+                   r2.hm=cor_BMI_aplo_1$estimate, 
+                   n1=nrow(cardio_0),
+                   n2=nrow(cardio_1), 
+                   alternative="two.sided", 
+                   alpha=0.05, conf.level=0.95, null.value=0)
+```
+
+The correlation coefficient between diastolic blood pressure and BMI differs between people with (`r round(cor_BMI_aplo_1$estimate,2)`) and without (`r round(cor_BMI_aplo_0$estimate,2)`) cardiovascular diseases seems to differ again (p-value under $\alpha = 0.05$), while people with cardiovascular diseases have a again a smaller correlation coefficient. Though, both correlation coefficients are again categorized between 0.1 and 0.3 [@Cohen1988].
+
+## 2.4 Restrict data to 95% quantile threshold of blood pressure and BMI and repeat 2.2 and 2.3 (\textcolor{red}{Task 4})
+
+```{r below95quantil, echo= FALSE}
+BMI95 <- quantile(cardio_data$BMI , probs = 0.95)
+ap_hi95 <- quantile(cardio_data$ap_hi , probs = 0.95)
+ap_lo95 <- quantile(cardio_data$ap_lo , probs = 0.95)
+
+cardio95_S <- cardio_data %>% filter(BMI < BMI95 & ap_hi < ap_hi95)
+
+cardio95_D <- cardio_data %>% filter(BMI < BMI95 & ap_lo < ap_lo95)
+
+```
+
+The 95% quantile of BMI, systolic and diastolic blood pressure are `r round(BMI95,2)`, `r ap_hi95` and `r ap_lo95`, respectively. The data set is filtered to exclude cases above these thresholds, while systolic and diastolic thresholds are used separately as a filter, which results in two different data sets (cardio95 systolic and diastolic data set).
+
+### 95% quantile of overall data of systolic blood pressure and BMI
+
+```{r plot_BMI_ap_hi_95, message = FALSE, , fig.cap= "Scatter plot showing the relationship between BMI and systolic blood pressure (below 95% quantile threshold)\\label{BMI_ap_hi95}", echo= FALSE}
+ggplot(cardio95_S, aes(ap_hi, BMI)) +
+  geom_point(aes(color = cardio, alpha = 0.7)) + 
+  geom_smooth(method = lm, colour = 'black') +
+  geom_smooth(aes(colour = cardio, group = cardio) , method = lm,se = FALSE) +
+  xlab("Systolic blood pressure (mmHg)") +
+  ylab("BMI (kg/m²)") +
+  theme_bw()
+```
+
+```{r cor_BMI_ap_hi_95, echo= FALSE}
+cor_BMI95_aphi95 <- cor.test(cardio95_S$ap_hi, cardio95_S$BMI, method = "pearson")
+table_cor_BMI95_aphi95 <- cor_BMI95_aphi95 %>% tidy()
+kable(t(table_cor_BMI95_aphi95),
+      caption = "95\\% BMI vs. systolic blood pressure: Pearson-moment correlation") %>% 
+  kable_styling(latex_options = c("striped"))
+```
+
+
+```{r cor_BMI_ap_hi_group_95, echo= FALSE}
+# correlation coefficient for both groups
+cardio_1_95S <- filter(cardio95_S, cardio == 1)
+cardio_0_95S <- filter(cardio95_S, cardio == 0)
+
+cor_BMI_aphi_0_95S <- cor.test(cardio_0_95S$ap_hi, cardio_0_95S$BMI, method = "pearson")
+cor_BMI_aphi_1_95S <- cor.test(cardio_1_95S$ap_hi, cardio_1_95S$BMI, method = "pearson")
+
+## two tailed t-test
+#2*(1-pnorm(abs(fisher.z(r1 = cor_BMI_aphi_0_95S$estimate ,
+#                        r2 = cor_BMI_aphi_1_95S$estimate ,
+#                        n1= nrow(cardio_0_95S),
+#                        n2= nrow(cardio_1_95S)))))
+
+# with cocor (https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0121945)
+cocor.indep.groups(r1.jk=cor_BMI_aphi_0_95S$estimate, r2.hm=cor_BMI_aphi_1_95S$estimate, 
+                   n1=nrow(cardio_0_95S), 
+                   n2=nrow(cardio_1_95S), 
+                   alternative="two.sided", 
+                   alpha=0.05, conf.level=0.95, null.value=0)
+```
+
+### 95 quantile of overall data of diastolic blood pressure and BMI
+
+```{r plot_BMI_ap_lo_95, message = FALSE, fig.cap= "Scatter plot showing the relationship between BMI and diastolic blood pressure (below 95% quantile threshold)\\label{BMI_ap_lo95}", echo= FALSE}
+ggplot(cardio95_D, aes(ap_lo, BMI)) +
+  geom_point(aes(color = cardio, alpha = 0.7)) + 
+  geom_smooth(method = lm, colour = 'black') +
+  geom_smooth(aes(colour = cardio, group = cardio) , method = lm,se = FALSE) +
+  xlab("Diastolic blood pressure (mmHg)") +
+  ylab("BMI (kg/m²)") +
+  theme_bw()
+```
+
+```{r cor_BMI_ap_lo_95, echo= FALSE}
+cor_BMI95_aplo95 <- cor.test(cardio95_D$ap_lo, cardio95_D$BMI, method = "pearson")
+table_cor_BMI95_aplo95 <- cor_BMI95_aplo95 %>% tidy()
+kable(t(table_cor_BMI95_aplo95),
+      caption = "95\\% BMI vs. systolic blood pressure: Pearson-moment correlation") %>% 
+  kable_styling(latex_options = c("striped"))
+```
+
+```{r cor_BMI_ap_lo_group_95, echo= FALSE}
+# correlation coefficient for both groups
+cardio_1_95D <- filter(cardio95_D, cardio == 1)
+cardio_0_95D <- filter(cardio95_D, cardio == 0)
+
+cor_BMI_aplo_0_95D <- cor.test(cardio_0_95D$ap_lo, cardio_0_95D$BMI, method = "pearson")
+cor_BMI_aplo_1_95D <- cor.test(cardio_1_95D$ap_lo, cardio_1_95D$BMI, method = "pearson")
+
+## two tailed t-test
+#2*(1-pnorm(abs(fisher.z(r1 = cor_BMI_aplo_0_95D$estimate ,
+#                        r2 = cor_BMI_aplo_1_95D$estimate ,
+#                        n1= nrow(cardio_0_95D),
+#                        n2= nrow(cardio_1_95D)))))
+
+# with cocor (https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0121945)
+cocor.indep.groups(r1.jk=cor_BMI_aplo_0_95D$estimate,
+                   r2.hm=cor_BMI_aplo_1_95D$estimate, 
+                   n1=nrow(cardio_0_95D), 
+                   n2=nrow(cardio_1_95D), 
+                   alternative="two.sided", 
+                   alpha=0.05, conf.level=0.95, null.value=0)
+```
+
+## 2.5 Summary relationship bwetween blood pressure and BMI
+
+There seems to be only a moderate relationship between blood pressure and BMI. Although correlation coefficients do differ between cardio groups (without disease > with disease) according to the Pearson-moment correlation, all correlation coefficients stay within the range of 0.1-0.3, therefore, in the same category according to Cohen [-@Cohen1988]. It has to be noted, that diastolic blood pressure versus BMI of the affected group while applying a 95% threshold, resulted even in a correlation coefficient lower than 0.1 (`r round(cor_BMI_aplo_1_95D$estimate,2)`).
+
+
+The following table (Table \ref{tab:SummaryTableBloodBMI}) summarizes the findings of this relationship. Also, including a threshold of 95% quantile does not change anything regarding the relation of blood pressure and BMI. In general, however, the correlation coefficients decrease slightly for every comparison. This can be explained by 
+
+```{r SummaryTableBloodBMI, echo= FALSE}
+
+Overall <- c(round(cor_BMI_aphi$estimate,2), round(cor_BMI_aplo$estimate,2),
+             round(cor_BMI95_aphi95$estimate,2), round(cor_BMI95_aplo95$estimate,2))
+
+Cardio1 <- c(round(cor_BMI_aphi_1$estimate,2), round(cor_BMI_aplo_1$estimate,2),
+             round(cor_BMI_aphi_1_95S$estimate,2), round(cor_BMI_aplo_1_95D$estimate,2))
+             
+Cardio0 <- c(round(cor_BMI_aphi_0$estimate,2), round(cor_BMI_aplo_0$estimate,2),
+             round(cor_BMI_aphi_0_95S$estimate,2), round(cor_BMI_aplo_0_95D$estimate,2))
+             
+PVal <- c(format.pval(cor_BMI_aphi$p.value), format.pval(cor_BMI_aplo$p.value),
+          format.pval(cor_BMI95_aphi95$p.value), format.pval(cor_BMI95_aplo95$p.value))
+
+SumTab1 <- data.frame(Overall, Cardio1, Cardio0, PVal)
+rownames(SumTab1) <- c("Systolic vs. BMI", 
+                       "Diastolic vs. BMI", 
+                       "Systolic95 vs. BMI95", 
+                       "Diastolic95 vs. BMI95")
+names(SumTab1) <- c("Overall", 
+                    "With disease", 
+                    "Without disease", "p-Value")
+kable(SumTab1,
+      booktabs = T) %>% 
+  kable_styling(latex_options = "striped")
+
+```
+
+## 2.6 Distribution of age within both cardio groups (\textcolor{red}{Task 5})
+
+Another theory is that age might be differently distributed in both cardiovascular groups (with vs. without disease). The age distribution within both groups can be extracted from Table \ref{tab:age}.
+
+```{r age, message = FALSE, echo= FALSE}
+cardio_data %>% group_by(cardio) %>%
+  summarize(mean_age = mean(age), 
+            sd_age = sd(age), 
+            max_age = max(age), 
+            min_age = min(age)) %>% 
+  kable(col.names = c("Cardio Group", "mean", "SD", "max", "min"), 
+        digits = 1, 
+        caption = "Overview of age distribution for each cardio group", 
+        booktabs = T) %>% 
+  kable_styling(latex_options = c("striped","hold_position"))%>%  
+  column_spec(2:4, width = "0.5in")%>% 
+  add_footnote(c("Cardio group 0 = healthy, 1 = affected", "SD = standard deviation"), 
+               notation="none")
+```
+
+Furthermore, the average age difference between both groups is `r abs(mean(cardio_0$age)- mean(cardio_1$age)) %>% round(.,2)`, the population with cardiovascular diseases being older than the healthy population. The boxplot and density curve of Figure \ref{ageDis} strengthen this hypothesis.
+
+
+```{r ageDistributionCardio, fig.cap= "Distribution of age\\label{ageDis}", fig.height= 2, echo= FALSE}
+bp_age1 <- ggplot(cardio_data, aes(y = age)) + geom_boxplot(aes(fill = cardio), alpha = 0.5) +
+  ylab("Age in years") + theme_bw() + 
+  xlab("Cardiovascular Group") +
+  ylim(0,100) +
+  theme(axis.text.x = element_blank(),axis.ticks.x = element_blank())
+
+dens_age1 <- cardio_data %>% ggplot(.) + geom_density(aes(age, fill = cardio), alpha = 0.5) + theme_bw()
+
+grid.arrange(bp_age1,dens_age1, nrow = 1)
+```
+
+## 2.7 Visualize the distribution of age for gender and cardio (\textcolor{red}{Task 6})
+
+While age seems to be slightly different distributed between cardio groups, gender looks fairly equally distributed between healthy and affected persons (Figure \ref{ageDis2})
+
+```{r ageDistributionCardioGender, fig.height= 2, fig.cap= "Age distribution for gender and cardio\\label{ageDis2}", echo= FALSE}
+cardio_data$gender <- as.factor(cardio_data$gender)
+dens_gender1 <- cardio_data %>% ggplot(.) + geom_density(aes(age, fill = gender), alpha = 0.5) + theme_bw() + theme(axis.text.y = element_blank(), 
+                                                                                                                    axis.title.y = element_blank())
+
+grid.arrange(dens_age1,dens_gender1, nrow = 1)
+```
+
+## 2.8 Additionally include variable glucose into plot of 2.6 (\textcolor{red}{Task 7})
+
+Taking, furthermore, the different types of glucose into account a slight different distribution between group 1-2 and group 3 can be visually detected (Figure \ref{ageDis3}), while especially older people seem to have a glucose level well above the normal level.
+
+```{r ageDistributionCardioGenderGluc, fig.height= 2, fig.cap= "Age distribution for cardio, gender and glucose\\label{ageDis3}", echo= FALSE}
+cardio_data$gluc <- as.factor(cardio_data$gluc)
+dens_glucose1 <- cardio_data %>% ggplot(.) + geom_density(aes(age, fill = gluc), alpha = 0.5) + theme_bw()+ theme(axis.text.y = element_blank(), 
+                                                                                                                    axis.title.y = element_blank())
+
+gridExtra::grid.arrange(dens_age1,dens_gender1,dens_glucose1, nrow = 1)
+```
+
+## 2.9 Risk factors smoking, alcohol and physical activity (\textcolor{red}{Task 8})
+
+Further risk factors, which might trigger cardiovascular diseases may be smoking, alcohol abuse or insufficient physical activity. Table \ref{tab:RiskFactors} summarizes the distribution of these variables between the two types of *cardio*. To quantify the differences between both groups of cardio, a Chi-Square test will be undertaken for each risk factor.
+
+
+```{r RiskFactors, message = FALSE, echo= FALSE}
+
+RF1 <- data.frame(table(cardio_data$cardio, cardio_data$smoke))
+RF2 <- data.frame(table(cardio_data$cardio, cardio_data$alco))
+RF3 <- data.frame(table(cardio_data$cardio, cardio_data$active))
+
+CQ1 <- chisq.test(table(cardio_data$cardio, cardio_data$smoke))
+CQ2 <- chisq.test(table(cardio_data$cardio, cardio_data$alco))
+CQ3 <- chisq.test(table(cardio_data$cardio, cardio_data$active))
+
+CardioGroup <- c("Cardio 0","Cardio 1","Chi-Square")
+RF1_per <- c(round(RF1[3,3]/(sum(RF1[1,3],RF1[3,3]))*100,2),round(RF1[4,3]/(sum(RF1[2,3],RF1[4,3]))*100,2),format.pval(CQ1$p.value))
+RF2_per <- c(round(RF2[3,3]/(sum(RF2[1,3],RF2[3,3]))*100,2),round(RF2[4,3]/(sum(RF2[2,3],RF2[4,3]))*100,2),format.pval(CQ2$p.value))
+RF3_per <- c(round(RF3[1,3]/(sum(RF3[1,3],RF3[3,3]))*100,2),round(RF3[2,3]/(sum(RF3[2,3],RF3[4,3]))*100,2),format.pval(CQ3$p.value))
+
+kable(cbind(CardioGroup,RF1_per,RF2_per,RF3_per),
+      col.names = c("Data","Smoking","Alcohol", "Physical activity"),
+      caption = "Relative frequency of risk factors in percent",
+      booktabs = T) %>% 
+  kable_styling(latex_options = c("striped","hold_position"))
+```
+
+
+It can be concluded, that, interestingly, the cardio group 0, which are people without cardiovascular diseases do smoke more and more frequently abuse alcohol as well as are less physically active than participants with cardiovascular diseases.
+
+\newpage
+
+# 3 References
